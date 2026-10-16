@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>document.documentElement.dataset.theme=sessionStorage.getItem('mb_theme')||'light';</script>
+<title>MetricBridge Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<noscript><p style="padding:16px">MetricBridge Health needs JavaScript and the local API server.</p></noscript>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="logo" viewBox="0 0 48 48"><path d="M24 42S6 31 6 18.5A9.5 9.5 0 0 1 24 13a9.5 9.5 0 0 1 18 5.5C42 31 24 42 24 42Z" fill="#0D9488"/><path d="M10 25h8l3-7 5 13 3-6h9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
+<a class="skip" href="#mn">Skip to content</a>
+
+<div id="login">
+  <div class="hero">
+    <div class="brand"><svg class="logo-i"><use href="#logo"/></svg><span>MetricBridge <small>Health</small></span></div>
+    <h1>Healthcare Quality Measurement &amp; Evidence Intelligence</h1>
+    <p>Check whether reported metrics are reliable and comparable, investigate potential care gaps, and trace every flag to evidence with human review. Supports reviewers; never diagnoses or makes clinical decisions. Neura Nova · SYNAPSE 2026 · PS-015.</p>
+    <span class="pill">Demo Environment · synthetic data only</span>
+    <svg class="ecg hero-ecg" viewBox="0 0 320 80" aria-hidden="true"><path d="M0 44h84l10-26 16 54 14-40 8 12h188" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div class="lc">
+    <form class="lb" id="lf" novalidate>
+      <h2>Welcome back.</h2>
+      <p class="sub">Sign in with one of the synthetic demo accounts. Choose its matching role; account access is checked by the local API. Sign-ins and reviews are saved to the local demo database and audit log.</p>
+      <label for="em">Email</label>
+      <input id="em" type="email" autocomplete="username" placeholder="doctor@demo.org">
+      <div class="err" id="e1" role="alert"></div>
+      <label for="pw">Password</label>
+      <div class="row nw"><input id="pw" type="password" autocomplete="current-password"><button type="button" class="btn g" id="sp">Show</button></div>
+      <div class="err" id="e2" role="alert"></div>
+      <label for="lr">Account role</label>
+      <select id="lr"><option value="doctor">Doctor / Care Team Member</option><option value="reviewer">Reviewer / Data Quality Reviewer</option><option value="manager">Manager / Analyst</option><option value="administrator">Administrator</option></select>
+      <div class="err" id="e3" role="alert"></div>
+      <button class="btn full" style="margin-top:18px">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <aside class="side">
+    <div class="brand"><svg class="logo-i"><use href="#logo"/></svg><span>MetricBridge <small>Health</small></span></div>
+    <nav id="nv" aria-label="Main"></nav>
+    <div class="side-art" aria-hidden="true">
+      <svg viewBox="0 0 200 150"><path d="M10 150C10 95 45 55 100 40c0 55-35 95-90 110Z" fill="#10B981" opacity=".16"/><path d="M120 150c0-40 25-70 70-85 0 40-25 70-70 85Z" fill="#0D9488" opacity=".14"/><path d="M42 30v28a20 20 0 0 0 40 0V30" fill="none" stroke="#0D9488" stroke-width="3" stroke-linecap="round"/><circle cx="62" cy="86" r="7" fill="none" stroke="#0D9488" stroke-width="3"/><use href="#logo" x="110" y="50" width="56" height="56"/></svg>
+      <p>Better data.<br>Better decisions.<br>Healthier tomorrows.</p>
+      <small>Neura Nova · SYNAPSE 2026</small>
+    </div>
+  </aside>
+  <div class="col">
+    <header class="top">
+      <div class="srch"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="q" placeholder="Search cases, cohorts…" aria-label="Search"></div>
+      <span class="sp"></span>
+      <span id="rl" class="pill" aria-label="Signed-in account role">Doctor</span>
+      <button class="btn g" id="th">Dark mode</button>
+      <button class="bell" id="bell" aria-label="Notifications" aria-haspopup="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i id="bd" hidden></i></button>
+      <div class="user"><span class="av" aria-hidden="true">DU</span><span><b>Demo User</b><small id="av-role">Doctor (demo)</small></span></div>
+      <button class="btn g" id="out">Log out</button>
+    </header>
+    <div id="pop" hidden></div>
+    <div id="np" hidden role="region" aria-label="Notifications"></div>
+    <main id="mn" tabindex="-1"></main>
+    <footer class="disc"><b>Synthetic demo data only.</b> Potential care gaps require human review and are not confirmed findings. Confidence scores indicate review priority, not probability. This tool supports quality measurement; it does not diagnose or make clinical decisions.</footer>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

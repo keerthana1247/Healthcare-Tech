@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script>document.documentElement.dataset.theme=sessionStorage.getItem('mb_theme')||'light';</script>
+<title>MetricBridge Health · Patient Care Records</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body class="patient-workspace">
+<header><div class="brand">MetricBridge <span>Health</span> <span style="color:#d6e4ed;font-weight:500">/ Patient Care</span></div><span><button id="themeToggle" class="back" type="button">Dark mode</button> <button id="logoutBtn" class="back hidden" style="background:transparent">Log out</button> <a class="back" href="/">← Back to analytics dashboard</a></span></header>
+<main>
+<div class="eyebrow">Care coordination workspace</div><h1>Patient treatment history</h1><p class="sub">Review documented care, manage follow-ups, and resolve incomplete records in one place.</p>
+<div class="notice"><strong>Prototype safety notice:</strong> This workspace contains synthetic demonstration records only. Treatment entries are illustrative examples, not clinical advice. Never enter real patient data into this demo. Missing documentation is not proof that care was not delivered.</div>
+<div id="loginCard" class="card">
+<h2>Demo sign-in</h2><p class="sub">Use the same account as the analytics dashboard. Your account role controls available patient and review actions.</p>
+<div class="row2"><div><label for="role">Account role</label><select id="role"><option value="doctor">Doctor / Care Team Member</option><option value="reviewer">Reviewer / Data Quality Reviewer</option><option value="manager">Manager / Analyst (read-only)</option><option value="administrator">Administrator</option></select></div><div><label for="email">Email</label><input id="email" type="email" autocomplete="username" placeholder="doctor@demo.org"></div></div>
+<label for="password">Password</label><input id="password" type="password" autocomplete="current-password">
+<button id="loginBtn">Enter workspace</button><div id="loginStatus" class="status"></div>
+</div>
+<div id="workspace" class="hidden">
+<div class="metrics">
+<div class="card"><div class="metric-label">Demo patients</div><div id="mPatients" class="metric-num">—</div></div>
+<div class="card"><div class="metric-label">Treatment records</div><div id="mTreatments" class="metric-num">—</div></div>
+<div class="card"><div class="metric-label">Follow-ups pending</div><div id="mFollowups" class="metric-num">—</div></div>
+<div class="card"><div class="metric-label">Records to verify</div><div id="mMissing" class="metric-num">—</div></div>
+</div>
+<div class="layout">
+<aside class="card">
+<div class="section-head"><h2>Patient directory</h2><button id="newPatientBtn" class="secondary">＋ Add</button></div>
+<input id="search" placeholder="Search patient ID, name or department">
+<div id="patientList" class="patient-list"></div>
+<div id="patientFormWrap" class="hidden">
+<hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+<h2>Add synthetic patient</h2><form id="patientForm">
+<label>Patient ID</label><input name="patient_id" required placeholder="DEMO-100">
+<label>Display name</label><input name="display_name" required placeholder="Demo Patient C">
+<div class="row2"><div><label>Age (demo)</label><input name="age" type="number" min="0" max="120" required></div><div><label>Department</label><select name="department"><option>Cardiology</option><option>Diabetes Care</option><option>Oncology</option><option>General Medicine</option><option>Orthopedics</option></select></div></div>
+<label>Condition label (demonstration only)</label><input name="condition_label" required placeholder="Example: follow-up monitoring">
+<button type="submit">Save patient</button><button type="button" class="secondary" id="cancelPatient">Cancel</button></form>
+</div>
+</aside>
+<section class="card">
+<div id="detailEmpty" class="empty">Select a patient to view documented treatment and follow-up history.</div>
+<div id="detail" class="hidden">
+<div class="section-head"><div><div id="patientId" class="eyebrow"></div><h2 id="patientName" style="font-size:24px;margin:3px 0"></h2><div id="patientMeta" class="sub"></div></div><span id="patientStatus" class="pill">Demo record</span></div>
+<div class="tabs"><button class="active" data-tab="history">Treatment history</button><button data-tab="followups">Follow-ups</button><button data-tab="quality">Missing data review</button><button data-tab="audit">Audit log</button></div>
+<div id="tab-history">
+<div class="section-head"><h2>Documented treatments</h2><button id="newTreatmentBtn">＋ Add treatment</button></div>
+<div id="treatmentTable" class="table-wrap"></div>
+<div id="treatmentFormWrap" class="card hidden" style="margin-top:14px;background:#f8fbfc">
+<h2>Add treatment record</h2><form id="treatmentForm">
+<label>Record type</label><select name="record_type"><option>Consultation</option><option>Procedure</option><option>Medication prescribed</option><option>Test / investigation</option><option>Therapy / intervention</option><option>Other documented care</option></select>
+<div class="row2"><div><label>Date documented</label><input name="treatment_date" type="date" required></div><div><label>Record status</label><select name="status"><option>Documented</option><option>Needs verification</option><option>Imported - unverified</option></select></div></div>
+<label>What the source record says (no inferred facts)</label><textarea name="description" required maxlength="1000" placeholder="Enter a concise summary copied from an authorized source record"></textarea>
+<label>Source record reference (synthetic only)</label><input name="source_reference" placeholder="e.g. DEMO-ORDER-01">
+<label>Provider / department</label><input name="provider" placeholder="e.g. Demo Care Team">
+<button type="submit">Save treatment record</button><button type="button" class="secondary" id="cancelTreatment">Cancel</button>
+</form></div>
+</div>
+<div id="tab-followups" class="hidden">
+<div class="section-head"><h2>Follow-up schedule</h2><button id="newFollowupBtn">＋ Add follow-up</button></div><div id="followupTable" class="table-wrap"></div>
+<div id="followupFormWrap" class="card hidden" style="margin-top:14px;background:#f8fbfc"><h2>Schedule follow-up</h2><form id="followupForm">
+<label>Follow-up purpose</label><input name="purpose" required maxlength="250" placeholder="As documented in the care plan">
+<div class="row2"><div><label>Due date</label><input name="due_date" type="date" required></div><div><label>Status</label><select name="status"><option>Scheduled</option><option>Completed</option><option>Needs verification</option><option>Cancelled</option></select></div></div>
+<label>Source reference (synthetic only)</label><input name="source_reference" placeholder="Care-plan reference">
+<button type="submit">Save follow-up</button><button type="button" class="secondary" id="cancelFollowup">Cancel</button></form></div>
+</div>
+<div id="tab-quality" class="hidden"><h2>Missing data verification</h2><p class="sub">Resolve missing fields only after checking an authorized source. Never fill gaps by guessing.</p><div id="qualityTable" class="table-wrap"></div></div>
+<div id="tab-audit" class="hidden"><h2>Audit log</h2><p class="sub">Append-only activity records for this demo. Production systems need hardened audit storage.</p><div id="auditTable" class="table-wrap"></div></div>
+<div id="workspaceStatus" class="status" role="status"></div>
+</div>
+</section></div></div>
+<dialog id="reviewDlg" style="border:1px solid var(--line);border-radius:14px;max-width:420px;width:92%"><form id="reviewForm"><h2>Review missing-data item</h2><input type="hidden" id="reviewId">
+<label for="reviewOutcome">Outcome</label><select id="reviewOutcome"><option>Verified</option><option>Still missing</option><option>Conflict</option></select>
+<label for="reviewNote">Review note (required; no real sensitive details)</label><textarea id="reviewNote" maxlength="500"></textarea>
+<div style="color:var(--red);min-height:18px" id="reviewErr" role="alert"></div><button type="submit">Save review</button> <button type="button" class="secondary" id="reviewCancel">Cancel</button></form></dialog>
+<p class="footer">Neura Nova · SYNAPSE 2026 · Synthetic data prototype. Not for diagnosis, prescribing, or real clinical use.</p>
+</main>
+<script>
+const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
+let token=sessionStorage.getItem('mb_token')||'',role=sessionStorage.getItem('mb_role')||'',patients=[],selected=null,tab='history';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(path,opts={}){const res=await fetch('/api'+path,{...opts,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...(opts.headers||{})}});let data={};try{data=await res.json()}catch{}if(res.status===401&&token&&!path.startsWith('/auth/')){signedOut('Your demo session expired. Sign in again.')}
+if(!res.ok)throw Error(typeof data.detail==='string'?data.detail:('Request failed ('+res.status+')'));return data}
+function signedOut(msg){token='';role='';sessionStorage.removeItem('mb_token');sessionStorage.removeItem('mb_role');$('#workspace').classList.add('hidden');$('#loginCard').classList.remove('hidden');$('#logoutBtn').classList.add('hidden');status(msg||'','#loginStatus')}
+function status(msg,where='#workspaceStatus'){ $(where).textContent=msg; }
+function pill(s){let c=['Verified','Documented','Completed'].includes(s)?'ok':s==='Overdue'?'red':['Missing','Needs verification','Conflict'].includes(s)?'warn':'';return `<span class="pill ${c}">${esc(s)}</span>`}
+function table(headers,rows){if(!rows.length)return '<div class="empty">No records yet.</div>';return '<div class="table-wrap"><table><thead><tr>'+headers.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'}
+async function login(){try{const x=await api('/auth/login',{method:'POST',body:JSON.stringify({role:$('#role').value,email:$('#email').value.trim(),password:$('#password').value})});token=x.access_token;role=x.role;sessionStorage.setItem('mb_token',token);sessionStorage.setItem('mb_role',role);$('#logoutBtn').classList.remove('hidden');$('#loginCard').classList.add('hidden');$('#workspace').classList.remove('hidden');await refresh();status('Signed in as '+role+'. Account access verified by the API.','#workspaceStatus')}catch(e){status(e.message,'#loginStatus')}}
+async function refresh(){const [p,m]=await Promise.all([api('/patients'),api('/metrics')]);patients=p.items;$('#mPatients').textContent=m.patients;$('#mTreatments').textContent=m.treatments;$('#mFollowups').textContent=m.pending_followups;$('#mMissing').textContent=m.open_quality_issues;renderList();if(selected)await openPatient(selected)}
+function renderList(){const q=$('#search').value.toLowerCase();const list=patients.filter(p=>(p.patient_id+' '+p.display_name+' '+p.department).toLowerCase().includes(q));$('#patientList').innerHTML=list.map(p=>`<button class="patient ${selected===p.id?'active':''}" data-pid="${p.id}"><strong>${esc(p.display_name)}</strong><small>${esc(p.patient_id)} · ${esc(p.department)}</small></button>`).join('')||'<div class="empty">No matching patients.</div>';$$('[data-pid]').forEach(b=>b.onclick=()=>openPatient(Number(b.dataset.pid)));$('#newPatientBtn').disabled=role!=='doctor'}
+function showTab(name){tab=name;$$('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));['history','followups','quality','audit'].forEach(t=>$('#tab-'+t).classList.toggle('hidden',t!==name));}
+async function openPatient(id){selected=id;renderList();const p=await api('/patients/'+id);$('#detailEmpty').classList.add('hidden');$('#detail').classList.remove('hidden');$('#patientId').textContent=p.patient_id;$('#patientName').textContent=p.display_name;$('#patientMeta').textContent=`Age ${p.age} · ${p.department} · ${p.condition_label}`;$('#patientStatus').textContent='Synthetic demo record';
+$('#treatmentTable').innerHTML=table(['Date','Record type','Documented detail','Provider','Status'],p.treatments.map(t=>[esc(t.treatment_date),esc(t.record_type),esc(t.description),esc(t.provider||'Not recorded'),pill(t.status)]));
+$('#followupTable').innerHTML=table(['Due date','Purpose','Status','Source reference'],p.followups.map(f=>[esc(f.due_date),esc(f.purpose),pill(f.computed_status||f.status),esc(f.source_reference||'Not recorded')]));
+$('#qualityTable').innerHTML=table(['Field / issue','Why flagged','Status','Action'],p.quality_issues.map(i=>[esc(i.field_name),esc(i.reason),pill(i.status),role==='reviewer'?`<button class="secondary" data-review="${i.id}">Review</button>`:'<span class="pill">Read only</span>']));
+$('#auditTable').innerHTML=table(['When (UTC)','Actor role','Action','Record'],p.audit.map(a=>[esc(a.created_at),esc(a.actor_role),esc(a.action),esc(a.entity_type+' #'+a.entity_id)]));
+$$('[data-review]').forEach(b=>b.onclick=()=>reviewIssue(Number(b.dataset.review)));
+['newTreatmentBtn','newFollowupBtn','newPatientBtn'].forEach(id=>$('#'+id).disabled=role!=='doctor');
+['newTreatmentBtn','newFollowupBtn','newPatientBtn'].forEach(id=>$('#'+id).style.display=role==='doctor'?'inline-flex':'none');
+showTab(tab)}
+function reviewIssue(id){if(role!=='reviewer')return;$('#reviewId').value=id;$('#reviewNote').value='';$('#reviewErr').textContent='';$('#reviewDlg').showModal()}
+$('#reviewForm').onsubmit=async e=>{e.preventDefault();const id=$('#reviewId').value,note=$('#reviewNote').value.trim();if(note.length<2){$('#reviewErr').textContent='A review note is required.';return}try{await api('/quality/'+id+'/review',{method:'POST',body:JSON.stringify({outcome:$('#reviewOutcome').value,note})});$('#reviewDlg').close();status('Review saved.');await refresh()}catch(err){$('#reviewErr').textContent=err.message}};
+$('#reviewCancel').onclick=()=>$('#reviewDlg').close();
+function formObj(form){return Object.fromEntries(new FormData(form).entries())}
+function wireForm(formId,path,wrapId,after){$('#'+formId).addEventListener('submit',async e=>{e.preventDefault();try{await api(path,{method:'POST',body:JSON.stringify(formObj(e.target))});e.target.reset();$('#'+wrapId).classList.add('hidden');await refresh();status('Saved successfully.')}catch(err){status(err.message)}})}
+$('#themeToggle').textContent=document.documentElement.dataset.theme==='dark'?'Light mode':'Dark mode';$('#themeToggle').onclick=()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=theme;sessionStorage.setItem('mb_theme',theme);$('#themeToggle').textContent=theme==='dark'?'Light mode':'Dark mode'};
+$('#loginBtn').onclick=login;$('#logoutBtn').onclick=async()=>{try{await api('/auth/logout',{method:'POST'})}catch{}signedOut('Signed out.')};
+if(token){$('#loginCard').classList.add('hidden');$('#workspace').classList.remove('hidden');$('#logoutBtn').classList.remove('hidden');refresh().then(()=>status('Signed in as '+role+' (shared with the dashboard).')).catch(e=>signedOut(e.message))}$('#search').oninput=renderList;
+$('#newPatientBtn').onclick=()=>$('#patientFormWrap').classList.toggle('hidden');$('#cancelPatient').onclick=()=>$('#patientFormWrap').classList.add('hidden');
+$('#newTreatmentBtn').onclick=()=>$('#treatmentFormWrap').classList.toggle('hidden');$('#cancelTreatment').onclick=()=>$('#treatmentFormWrap').classList.add('hidden');
+$('#newFollowupBtn').onclick=()=>$('#followupFormWrap').classList.toggle('hidden');$('#cancelFollowup').onclick=()=>$('#followupFormWrap').classList.add('hidden');
+$$('[data-tab]').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+$('#patientForm').onsubmit=async e=>{e.preventDefault();try{const x=formObj(e.target);x.age=Number(x.age);const p=await api('/patients',{method:'POST',body:JSON.stringify(x)});e.target.reset();$('#patientFormWrap').classList.add('hidden');await refresh();await openPatient(p.id);status('Patient record added.')}catch(err){status(err.message)}};
+$('#treatmentForm').onsubmit=async e=>{e.preventDefault();if(!selected)return;try{await api(`/patients/${selected}/treatments`,{method:'POST',body:JSON.stringify(formObj(e.target))});e.target.reset();$('#treatmentFormWrap').classList.add('hidden');await refresh();status('Treatment record saved.')}catch(err){status(err.message)}};
+$('#followupForm').onsubmit=async e=>{e.preventDefault();if(!selected)return;try{await api(`/patients/${selected}/followups`,{method:'POST',body:JSON.stringify(formObj(e.target))});e.target.reset();$('#followupFormWrap').classList.add('hidden');await refresh();status('Follow-up saved.')}catch(err){status(err.message)}};
+</script></body></html>

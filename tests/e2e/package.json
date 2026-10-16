@@ -1,0 +1,1 @@
+{ "name": "metricbridge-e2e", "private": true, "scripts": { "test": "node dashboard.e2e.js" }, "devDependencies": { "jsdom": "^24.0.0" } }

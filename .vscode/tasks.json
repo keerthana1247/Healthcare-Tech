@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Run server", "type": "shell", "command": "${command:python.interpreterPath} -m uvicorn backend.app:app --host 127.0.0.1 --port 8000 --reload", "isBackground": true, "problemMatcher": [], "group": "build" },
+    { "label": "Run Python tests", "type": "shell", "command": "${command:python.interpreterPath} -m pytest -q", "problemMatcher": [], "group": "test" },
+    { "label": "Run browser E2E checks", "type": "shell", "command": "${command:python.interpreterPath} scripts/run_e2e.py", "problemMatcher": [] },
+    { "label": "Reset demo database", "type": "shell", "command": "${command:python.interpreterPath} scripts/reset_db.py", "problemMatcher": [] }
+  ]
+}
